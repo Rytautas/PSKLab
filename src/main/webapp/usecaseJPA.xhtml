@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+<h:head>
+    <title>DAO su JPA</title>
+</h:head>
+<h:body>
+    <h:form>
+        <p:fieldset legend="Shop List" toggleable="true" style="width: 50%">
+            <p:dataTable value="#{requestUseCaseControllerJPA.allShops}" var="shop">
+                <p:column headerText="Shop">
+                    <h:outputText value="#{shop.id} #{shop.name}" />
+                </p:column>
+                <p:column headerText="Items">
+                    <ui:repeat var="item" value="#{shop.itemList}">
+                        <h:outputText value="#{item.name} #{item.price}" />
+                    </ui:repeat>
+                </p:column>
+            </p:dataTable>
+        </p:fieldset>
+
+        <h2>Create new shop</h2>
+        <table>
+            <tr>
+                <td>
+                    <h:panelGrid columns="3">
+                        <p:outputLabel for="shopName" value="Shop name"/>
+                        <p:inputText id="shopName" value="#{requestUseCaseControllerJPA.shop.name}"/>
+                        <p:message for="shopName"/>
+                    </h:panelGrid>
+                </td>
+                <td>
+                    <h:panelGrid columns="3">
+                        <p:outputLabel for="itemName" value="Item name"/>
+                        <p:inputText id="itemName" value="#{requestUseCaseControllerJPA.item.name}"/>
+                        <p:message for="itemName"/>
+
+                        <p:outputLabel for="itemPrice" value="Item price"/>
+                        <p:inputText id="itemPrice" value="#{requestUseCaseControllerJPA.item.price}"/>
+                        <p:message for="itemPrice"/>
+                    </h:panelGrid>
+                </td>
+            </tr>
+        </table>
+        <p:commandButton value="Create shop and item"
+                         actionListener="#{requestUseCaseControllerJPA.createShopItem()}"
+                         action="simple-usecase-jpa?faces-redirect=true"
+                         ajax="false"/>
+    </h:form>
+
+    <a href="./index.xhtml">
+        Back
+    </a>
+</h:body>
+</html>
