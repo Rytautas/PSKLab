@@ -7,6 +7,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+/**
+ * test
+ */
 @ApplicationScoped
 public class CourierDAO {
     @Inject
