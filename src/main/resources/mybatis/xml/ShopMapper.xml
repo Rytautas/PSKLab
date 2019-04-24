@@ -62,7 +62,9 @@
     from PUBLIC.SHOP
   </select>
 
-  <!-- Rankomis prirašytas ryšiui Many-To-Many Shop - Item -->
+  <!--
+  ranka prirasytas many-to-many sarysiui atvaizduot
+-->
   <select id="selectShopItems" resultType="Item">
         SELECT
             i.id,
