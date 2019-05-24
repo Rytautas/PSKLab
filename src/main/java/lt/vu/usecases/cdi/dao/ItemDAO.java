@@ -19,4 +19,12 @@ public class ItemDAO {
     public List<Item> getAllItems() {
         return em.createNamedQuery("Item.findAll", Item.class).getResultList();
     }
+    public Item getItemByID(int ID) {
+        return em.find(Item.class, ID);
+    }
+
+    public void update(Item item) {
+        em.merge(item);
+        em.flush();
+    }
 }

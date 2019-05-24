@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+>
+<head>
+    <title>Asynchronous calls</title>
+</head>
+<body>
+    <h:form>
+        <h2>Asynchronous calls</h2>
+        <p><h:outputText value="#{async.isResultReady()}" style="color: red" /></p>
+        <p>
+            <h:commandButton value="Calculate" disabled="#{async.areCalculationsDone()}"
+                             action="#{async.runCalculations()}"
+                             ajax="false"/>
+        </p>
+    </h:form>
+</body>
+</html>

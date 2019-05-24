@@ -19,4 +19,12 @@ public class ShopDAO {
     public List<Shop> getAllShops() {
         return em.createNamedQuery("Shop.findAll", Shop.class).getResultList();
     }
+    public Shop getShopByID(int ID) {
+        return em.find(Shop.class, ID);
+    }
+
+    public void update(Shop shop) {
+        em.merge(shop);
+        em.flush();
+    }
 }

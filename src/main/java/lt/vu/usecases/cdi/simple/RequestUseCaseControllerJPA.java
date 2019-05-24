@@ -4,14 +4,18 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lt.vu.entities.*;
 import lt.vu.usecases.cdi.dao.*;
+import org.primefaces.context.RequestContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Model;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.util.List;
+import javax.persistence.OptimisticLockException;
 
-@Model // tas pats kaip: @Named ir @RequestScoped
+@Model
 @Slf4j
 public class RequestUseCaseControllerJPA {
 
@@ -21,10 +25,17 @@ public class RequestUseCaseControllerJPA {
     private Item item = new Item();
     @Getter
     private List<Shop> allShops;
+    @Getter
+    private Shop conflictingShop;
+    @Getter
+    private Shop selectedShop;
+    @Getter
+    private List<Item> allItems;
 
     @PostConstruct
     public void init() {
         loadAllShops();
+        loadAllItems();
     }
 
     @Inject
@@ -39,6 +50,7 @@ public class RequestUseCaseControllerJPA {
         itemDAO.create(item);
         shopDAO.create(shop);
         log.info("Maybe OK...");
+        refresh();
     }
 
     @Transactional
@@ -51,7 +63,38 @@ public class RequestUseCaseControllerJPA {
         itemDAO.create(item);
     }
 
+    public void prepEdit(Shop shop) {
+        conflictingShop = null;
+        selectedShop = shop;
+    }
+
+    @Transactional
+    public void updateShop() {
+        try {
+            shopDAO.update(selectedShop);
+            refresh();
+        }
+        catch (OptimisticLockException ole) {
+            conflictingShop = shopDAO.getShopByID(selectedShop.getId());
+            RequestContext.getCurrentInstance().addCallbackParam("validationFailed", true);
+        }
+    }
+
+    public void refresh() {
+        loadAllShops();
+    }
+
+    @Transactional
+    public void overwriteShop() {
+        selectedShop.setOptLockVersion(conflictingShop.getOptLockVersion());
+        updateShop();
+    }
+
     private void loadAllShops() {
         allShops = shopDAO.getAllShops();
+    }
+
+    private void loadAllItems() {
+        allItems = itemDAO.getAllItems();
     }
 }
