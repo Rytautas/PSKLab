@@ -12,8 +12,9 @@ public class ShopDAO {
     @Inject
     private EntityManager em;
 
-    public void create(Shop shop) {
+    public Shop create(Shop shop) {
         em.persist(shop);
+        return shop;
     }
 
     public List<Shop> getAllShops() {
@@ -22,6 +23,7 @@ public class ShopDAO {
     public Shop getShopByID(int ID) {
         return em.find(Shop.class, ID);
     }
+    public void deleteShopById(int ID) { em.detach(getShopByID(ID)); }
 
     public void update(Shop shop) {
         em.merge(shop);

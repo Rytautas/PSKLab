@@ -11,10 +11,13 @@
 <head>
     <title>Optimistic Lock</title>
 </head>
-<body>
+<h:body>
     <h1>Optimistic Lock</h1>
-    <h:form name="form">
-        <p:fieldset legend="Shop list" toggleable="true" style="width: 20%">
+    <h:form id="form">
+        <p:fieldset id="list" legend="Shop list" toggleable="true" style="width: 20%">
+            <p:commandButton value="Reload phone" icon="ui-icon-arrowrefresh-1-e"
+                             actionListener="#{updateShop.reloadShops()}"
+                             update=":form:list"/>
             <p:dataTable value="#{requestUseCaseControllerJPA.allShops}" var="shop" tableStyle="table-layout: auto">
                 <p:column headerText="Shop" width="200">
                     <h:outputText value="#{shop.id} #{shop.name}" />
@@ -26,7 +29,8 @@
                 </p:column>
                 <p:column>
                     <p:commandButton value="Edit" icon="ui-icon-pencil"
-                                     actionListener="#{requestUseCaseControllerJPA.prepEdit(shop)}"
+                                     actionListener="#{updateShop.prepEdit(shop)}"
+                                     update=":form:shopDetail"
                                      oncomplete="PF('shopDialog').show()" />
                 </p:column>
             </p:dataTable>
@@ -34,58 +38,58 @@
 
         <p:dialog header="Edit Shop" widgetVar="shopDialog" modal="true" closable="true" resizable="false" closeOnEscape="true">
             <p:outputPanel id="shopDetail">
-                <h:outputText value="No shop was selected... Weird..." rendered="#{empty requestUseCaseControllerJPA.selectedShop}" />
-                <p:panelGrid  columns="3" rendered="#{not empty requestUseCaseControllerJPA.selectedShop}"
+                <h:outputText value="No shop was selected... Weird..." rendered="#{empty updateShop.selectedShop}" />
+                <p:panelGrid  columns="3" rendered="#{not empty updateShop.selectedShop}"
                               columnClasses="label,value" styleClass="ui-noborder">
                     <h:outputText value="Shop ID:" />
-                    <h:outputText value="#{requestUseCaseControllerJPA.selectedShop.id}" style="font-weight: bold"/>
+                    <h:outputText value="#{updateShop.selectedShop.id}" style="font-weight: bold"/>
                     <br/>
 
                     <p:outputLabel for="name" value="Shop name:"/>
-                    <p:inputText id="name" value="#{requestUseCaseControllerJPA.selectedShop.name}"/>
+                    <p:inputText id="name" value="#{updateShop.selectedShop.name}"/>
                     <p:message for="name"/>
 
                     <h:outputText value="Items:"/>
-                    <p:selectCheckboxMenu id="items" value="#{requestUseCaseControllerJPA.selectedShop.itemList}"
+                    <p:selectCheckboxMenu id="items" value="#{updateShop.selectedShop.itemList}"
                                           converter="omnifaces.SelectItemsIndexConverter"
                                           label="Select items:" updateLabel="true"
                                           filter="true" filterMatchMode="startsWith" panelStyle="width:500px">
                         <f:attribute name="collectionType" value="java.util.ArrayList" /> <!-- Kitaip JSF bando kurti naują Hibernate PersistentBag ir būna bėdos... -->
-                        <f:selectItems value="#{requestUseCaseControllerJPA.allItems}" var="item"
+                        <f:selectItems value="#{updateShop.allItems}" var="item"
                                        itemLabel="#{item.name}" itemValue="#{item.price}" />
                     </p:selectCheckboxMenu>
                     <p:message for="items"/>
 
                     <h:outputText value="Opt. lock version:" />
-                    <h:outputText value="#{requestUseCaseControllerJPA.selectedShop.optLockVersion}" style="font-weight: bold"/>
+                    <h:outputText value="#{updateShop.selectedShop.optLockVersion}" style="font-weight: bold"/>
                 </p:panelGrid>
 
-                <p:commandButton value="Update" actionListener="#{requestUseCaseControllerJPA.updateShop}"
-                                 rendered="#{empty requestUseCaseControllerJPA.conflictingShop}"
+                <p:commandButton value="Update" actionListener="#{updateShop.updateSelectedShop}"
+                                 rendered="#{empty updateShop.conflictingShop}"
                                  icon="ui-icon-check" style="margin-top: 1em"
                                  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('shopDialog').hide()" />
 
-                <p:panelGrid  columns="2" rendered="#{not empty requestUseCaseControllerJPA.conflictingShop}"
+                <p:panelGrid  columns="2" rendered="#{not empty updateShop.conflictingShop}"
                               columnClasses="label,value" styleClass="ui-noborder" style="margin-top: 1em">
                     <f:facet name="header">Conflicting shop</f:facet>
 
                     <h:outputText value="Shop ID:"/>
-                    <h:outputText value="#{requestUseCaseControllerJPA.conflictingShop.id}"/>
+                    <h:outputText value="#{updateShop.conflictingShop.id}"/>
 
                     <h:outputText value="Shop name:"/>
-                    <h:outputText value="#{requestUseCaseControllerJPA.conflictingShop.name}"/>
+                    <h:outputText value="#{updateShop.conflictingShop.name}"/>
 
                     <h:outputText value="Items:"/>
-                    <ui:repeat var="item" value="#{requestUseCaseControllerJPA.conflictingShop.itemList}" varStatus="itemStatus">
+                    <ui:repeat var="item" value="#{updateShop.conflictingShop.itemList}" varStatus="itemStatus">
                         #{item.name}<h:outputText value=", " rendered="#{not itemStatus.last}"/>
                     </ui:repeat>
 
                     <h:outputText value="Opt. lock version:" />
-                    <h:outputText value="#{requestUseCaseControllerJPA.conflictingShop.optLockVersion}" style="font-weight: bold"/>
+                    <h:outputText value="#{updateShop.conflictingShop.optLockVersion}" style="font-weight: bold"/>
                 </p:panelGrid>
 
-                <p:commandButton value="Overwrite" actionListener="#{requestUseCaseControllerJPA.overwriteShop}"
-                                 rendered="#{not empty requestUseCaseControllerJPA.conflictingShop}"
+                <p:commandButton value="Overwrite" actionListener="#{updateShop.overwriteShop}"
+                                 rendered="#{not empty updateShop.conflictingShop}"
                                  icon="ui-icon-notice" style="margin-top: 1em"
                                  update=":form:shopDetail :form:list"
                                  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('shopDialog').hide()" />
@@ -95,5 +99,5 @@
     <a href="./index.xhtml">
         Back
     </a>
-</body>
+</h:body>
 </html>

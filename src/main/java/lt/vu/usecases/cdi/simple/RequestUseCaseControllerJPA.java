@@ -66,18 +66,25 @@ public class RequestUseCaseControllerJPA {
     public void prepEdit(Shop shop) {
         conflictingShop = null;
         selectedShop = shop;
+        System.out.println(selectedShop.toString());
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 
     @Transactional
     public void updateShop() {
+        System.out.println("k");
+        System.out.println(selectedShop.toString());
+        System.out.println("k");
         try {
+            System.out.println("asdfsdgasrfghjnrfsdgh");
+            System.out.println(selectedShop.toString());
             shopDAO.update(selectedShop);
-            refresh();
         }
         catch (OptimisticLockException ole) {
             conflictingShop = shopDAO.getShopByID(selectedShop.getId());
             RequestContext.getCurrentInstance().addCallbackParam("validationFailed", true);
         }
+
     }
 
     public void refresh() {

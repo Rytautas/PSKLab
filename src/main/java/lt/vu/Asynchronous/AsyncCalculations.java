@@ -20,13 +20,16 @@ public class AsyncCalculations implements Serializable {
     @RescueOrAsync
     private EntityManager em;
 
+    @Inject
+    AlternativeAsyncInterface asyncSleep;
+
     @Futureable
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public Future<String> bigCalculationsOfHell() {
         System.out.println("transaction " + em.getDelegate());
         System.out.println("Starting Big calculations of Hell");
         try {
-            Thread.sleep(6000); // Simulate intensive calculations of Hell
+            asyncSleep.sleepForAsync(); // Simulate intensive calculations of Hell
         } catch (InterruptedException e) {
             System.out.println("Exception raised while executing bigCalculationsOfHell: " + e.toString());
         }
